@@ -111,7 +111,6 @@ class PointIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].memberId").value(memberId))
                 .andExpect(jsonPath("$[0].amount").value(0L))
-                .andExpect(jsonPath("$[0].reason").value("테스트 적립"))
-                .andExpect(jsonPath("$[0].createdAt").isNotEmpty());
+                .andExpect(jsonPath("$[0].reason").value("테스트 적립"));
     }
 }

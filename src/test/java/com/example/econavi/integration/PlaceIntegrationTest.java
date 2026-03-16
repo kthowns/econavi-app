@@ -145,7 +145,7 @@ class PlaceIntegrationTest {
         mockMvc.perform(post("/place/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         // 유효하지 않은 토큰
         mockMvc.perform(post("/place/add")
@@ -276,7 +276,7 @@ class PlaceIntegrationTest {
         mockMvc.perform(patch("/place/update/{placeId}", place.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         // 유효하지 않은 토큰
         mockMvc.perform(patch("/place/update/{placeId}", place.getId())
@@ -326,7 +326,7 @@ class PlaceIntegrationTest {
 
         // Authorization 헤더 없음
         mockMvc.perform(delete("/place/delete/{placeId}", place.getId()))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         // 유효하지 않은 토큰
         mockMvc.perform(delete("/place/delete/{placeId}", place.getId())

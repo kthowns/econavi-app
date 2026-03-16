@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BEARER_PREFIX = "Bearer ";
     private final JwtUtil jwtUtil;
     private final JwtBlacklistService jwtBlacklistService;
     private final AuthAuthenticationEntryPoint authAuthenticationEntryPoint;
@@ -30,24 +33,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //JWT 파싱
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String token = authHeader.substring(7); // "Bearer " 제거
+        String token = resolveToken(request);
 
         try{
-            if (!jwtUtil.validateToken(token)
-                    || jwtBlacklistService.isTokenLogout(token)
-                    || jwtBlacklistService.isTokenWithdrawn(token)
+            if (StringUtils.hasText(token) &&
+                    jwtUtil.validateToken(token)
+                    && !jwtBlacklistService.isTokenLogout(token)
+                    && !jwtBlacklistService.isTokenWithdrawn(token)
             ) {
-                throw new BadCredentialsException("Invalid token");
+                Authentication authentication = jwtUtil.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
-            Authentication authentication = jwtUtil.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e){
             SecurityContextHolder.clearContext();
             authAuthenticationEntryPoint.commence(request, response, e);
@@ -55,5 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
