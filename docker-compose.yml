@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  econavi-db:
+    image: mysql:8.0
+    container_name: econavi-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - econavi-db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - econavi-net
+
+  econavi-be:
+    image: ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
+    container_name: econavi-be
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      econavi-db:
+        condition: service_healthy
+    networks:
+      - econavi-net
+
+  econavi-redis:
+    image: redis:7-alpine
+    container_name: econavi-redis
+    restart: unless-stopped
+    volumes:
+      - econavi-redis-data:/data
+    networks:
+      - econavi-net
+
+networks:
+  econavi-net:
+    external: true
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  econavi-db-data:
+  econavi-redis-data:
