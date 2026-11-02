@@ -2,7 +2,7 @@
 
 **환경을 보호하는 에코 로컬 관광 지도 앱의 백엔드입니다.**
 
-충남톤에서 **끓는 점 2도(2팀)**가 개발한 Spring Boot + Flutter 프로젝트입니다. 친환경 매장과 행사 장소를 탐색하고, 관심 장소를 찜하며 에코 포인트와 지급 내역을 확인할 수 있습니다.
+충남톤에서 **끓는 점 2도(2팀)** 이 개발한 Spring Boot + Flutter 프로젝트입니다. 친환경 매장과 행사 장소를 탐색하고, 관심 장소를 찜하며 에코 포인트와 지급 내역을 확인할 수 있습니다.
 
 이 저장소는 [2025Chungnamthon/2025_CHUNGNAM_TEAM_2_BE](https://github.com/2025Chungnamthon/2025_CHUNGNAM_TEAM_2_BE)의 fork입니다. Spring Boot API 서버와 Flutter 웹 빌드 결과물을 포함하며, Flutter 앱 소스는 이 저장소에 포함되어 있지 않습니다.
 
